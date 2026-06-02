@@ -1,3 +1,10 @@
+# КОМАНДЫ:
+
+Обновить версии всех утилит, которые указанны в pre-commit-config.yaml:
+```sh
+poetry run pre-commit autoupdate
+```
+
 # ПОЯСНЕНИЯ К ПРОЕКТУ:
 
 Разделение:
