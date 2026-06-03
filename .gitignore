@@ -25,3 +25,4 @@ TestResults.xml
 /.hiden/
 *.swp
 /.venv/
+__pycache__/
