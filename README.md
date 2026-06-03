@@ -1,5 +1,31 @@
 # КОМАНДЫ:
 
+Запуск проекта:
+
+В каталоге meet_rooms:
+```sh
+uvicorn main:app --reload
+```
+
+## poetry:
+
+Добавить новые библиотеки:
+
+1. Библиотеки, которые нужны для самого проекта:
+```sh
+poetry add ...
+```
+
+2. Библиотеки для тестирования:
+```sh
+poetry add --group test ...
+```
+
+3. Библиотеки для процесса разработки (линтеры, форматеры, и прочее):
+```sh
+poetry add --group dev ...
+```
+
 Обновить версии всех утилит, которые указанны в pre-commit-config.yaml:
 ```sh
 poetry run pre-commit autoupdate
@@ -15,9 +41,9 @@ poetry run pre-commit autoupdate
 3. Родительский каталог - вспомогательное (git), оболочки (Docker, .venv) и прочее подобное.
 
 В pyproject.toml:
-
+```toml
 packages = [{include = "meet_room", from = "src"}]
-
+```
 Позволяет писать простой импорт:
 
 from meet_room import ...
