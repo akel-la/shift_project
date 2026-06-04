@@ -26,3 +26,4 @@ TestResults.xml
 *.swp
 /.venv/
 __pycache__/
+.env
