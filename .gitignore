@@ -27,3 +27,4 @@ TestResults.xml
 /.venv/
 __pycache__/
 .env
+/shift_data.db

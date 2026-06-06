@@ -1,6 +1,78 @@
 # КОМАНДЫ:
 
-Запуск проекта:
+## ЗАПУСК ПРОЕКТА:
+
+### ЛОКАЛЬНО:
+
+1. Клонируем репозиторий:
+```sh
+git clone ...
+```
+
+2. Создаем файл .env, копируя данные из env.example:
+```sh
+cp .env.example .env
+```
+
+3. Установка зависимостей (библиотек python):
+```sh
+poetry install
+```
+
+4. Применить миграции alembic:
+```sh
+poetry run alembic upgrade head
+```
+
+5. Запуск приложения:
+```sh
+poetry run uvicorn src.app.main:app --port 8000 --reload
+```
+
+Данные сервиса - появятся в файле *.db в текущем рабочем каталоге.
+
+Проверить состояние миграций:
+alembic current
+
+Состояние таблицы в БД:
+sqlite3 shift_data.db ".schema имя_таблицы"
+
+Найти разницу между текущим состоянием БД и приложения, и создать миграцию:
+alembic revision --autogenerate -m "..."
+
+Применять после изменения poetry.toml:
+poetry lock
+
+
+### ЧЕРЕЗ КОНТЕЙНЕР:
+
+Запуск через docker run, БД не в контейнере:
+```sh
+docker run -d \
+  --name shift_role
+  -e POSTGRES_USER=shift_user \
+  -e POSTGRES_PASSWORD=12345shift12345 \
+  -e POSTGRES_DB=shift_db \
+  -p 5432:5432 \
+  postgres:16-alpine
+```
+Команда docker run:
+Скачает указанный образ postgres (16-alpine).
+Запустит БД в отдельном контейнере.
+Создаст роль, пользователя, БД
+
+Удаление контейнера:
+```sh
+docker rm -f shift_role
+```
+
+Удаление БД внутри контейнера:
+```sh
+docker exec -it shift_role psql -U shift_user -d shift_db
+```
+
+
+Запуск проекта (УСТАРЕЛО):
 
 В каталоге app:
 ```sh
@@ -35,6 +107,28 @@ poetry run pre-commit autoupdate
 
 ## СТРУКТУРА ПРОЕКТА:
 
+### Dockerfile:
+
+base - это образ, на основе которого будут создаваться все конечные образы (test, prod), поэтому base это slim образ (ничего лишнего) и в нем все то, что является общим для всех конечных образов.
+
+test и prod - это конечные образы.
+
+builder образы - они для сборки (компиляция, и тому подобное), поэтому они отдельно и они НЕ slim. Мы собираем в них все необходимое, а затем просто копируем это через COPY в конечные образы.
+
+Флаг --no-root - не устанавливать сам проект, общая логика в том, чтобы разделить слои для кеширования:
+
+1. Файлы pyproject.toml и poetry.lock:
+COPY pyproject.toml poetry.lock ./
+
+2. Зависимости, являющиеся ядром проекта:
+RUN poetry install --no-dev --no-root
+
+3. Код проекта:
+COPY ./src ./src
+
+4. Установка самого проекта:
+RUN poetry install --no-dev
+
 ### Alembic:
 
 Не нужно указывать DATABASE_URL в 2 местах - alembic.ini и env.py, достаточно только в env.py.
@@ -48,6 +142,12 @@ poetry run pre-commit autoupdate
    config.py
    #
 ```
+
+### SQLAlchemy:
+
+У UniqueCOnstraint есть свои имена, соответствующие шаблону, в котором перечисленны все столбцы, которые участвуют в проверке:
+
+uq_<столбец_1>_<столбец_2>...
 
 Разделение:
 
