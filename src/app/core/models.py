@@ -8,3 +8,4 @@ from app.core.models import *
 """
 
 from app.models.room import *  # noqa
+from app.models.user import *  # noqa

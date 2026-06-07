@@ -1,4 +1,5 @@
 import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import CheckConstraint
 from sqlalchemy import Date
@@ -10,6 +11,9 @@ from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 
 from app.core.base import Base
+
+if TYPE_CHECKING:
+    from .user import User
 
 
 class Room(Base):
@@ -70,9 +74,13 @@ class Booking(Base):
     __tablename__ = "bookings"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    # Добавить позже, при создании файла User и таблицы User в ней:
-    # user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable = False)
-    # user[list[Booking]] relationship(back_populates = "bookings")
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    user: Mapped["User"] = relationship(back_populates="bookings")
+
     room_slot_id: Mapped[int] = mapped_column(
         ForeignKey("room_slots.id"), nullable=False
     )
