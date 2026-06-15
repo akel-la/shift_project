@@ -20,13 +20,19 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 from app.core.base import Base  # noqa
-from app.core.models import *  # noqa
+from app.models import *  # noqa
 
 target_metadata = Base.metadata
 
 
 def do_run_migrations(connection):
-    context.configure(connection=connection, target_metadata=target_metadata)
+
+    is_sqlite = connection.dialect.name == "sqlite"
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+        render_as_batch=is_sqlite,
+    )
 
     with context.begin_transaction():
         context.run_migrations()

@@ -3,10 +3,12 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 from .config import settings
 
-# Асинхронный движок - для FastAPI:
+# Асинхронный движок - для асинхронного проекта (FastAPI, SQLAlchemy):
 engine = create_async_engine(
     settings.DATABASE_URL,
-    echo=True,  # Для отладки - True, в проде - False.
+    # По умолчанию False, но можно поменять
+    # на True, если ищем баг на уровне ORM-БД:
+    echo=False,
 )
 
 async_session_maker = async_sessionmaker(
@@ -16,7 +18,6 @@ async_session_maker = async_sessionmaker(
     # Необходим для асинхронных запросов, так как асинхронные запросы не
     # поддерживают неявные запросы в БД для обновления не свежих данных:
     expire_on_commit=False,
-    # autoflush = False - позже узнать, нужно или нет.
 )
 
 
