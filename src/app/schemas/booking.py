@@ -1,12 +1,13 @@
 from datetime import date
 
 from pydantic import field_validator
+from pydantic import Field
 
 from app.core.schema import BaseSchema
 
 
 class BookingBase(BaseSchema):
-    slot_id: int
+    slot_id: int = Field(gt=0)
     booking_date: date
 
     @field_validator("booking_date")
@@ -23,8 +24,8 @@ class BookingCreate(BookingBase):
 
 
 class BookingCreateResponse(BookingBase):
-    id: int
-    user_id: int
+    id: int = Field(gt=0)
+    user_id: int = Field(gt=0)
 
 
 class BookingResponse(BookingCreateResponse):

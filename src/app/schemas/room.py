@@ -1,5 +1,6 @@
 from app.core.schema import BaseSchema
 from app.schemas.slot import SlotResponse
+from pydantic import Field
 
 
 class RoomBase(BaseSchema):
@@ -12,7 +13,7 @@ class RoomCreate(RoomBase):
 
 
 class RoomCreateResponse(RoomBase):
-    id: int
+    id: int = Field(gt=0)
 
 
 # Наследуемся от BaseSchema, чтобы не было обязательного поля name:

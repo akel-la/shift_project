@@ -24,7 +24,7 @@ async def create_admin(
     session: Annotated[AsyncSession, Depends(get_async_session)],
     current_user: Annotated[User, Depends(get_current_user)],
     data: UserCreate,
-):
+    ):
     """
     Создание нового администратора.
     Только существующий администратор может выполнить этот запрос.

@@ -31,10 +31,10 @@ ENV POETRY_VIRTUALENVS_IN_PROJECT=true \
     POETRY_VIRTUALENVS_CREATE=true \
     POETRY_NO_INTERACTION=true
 COPY pyproject.toml poetry.lock ./
-RUN poetry install --no-dev --no-root
+RUN poetry install --only main --no-root
 COPY ./src ./src
 # Нужно, чтобы в pyproject.toml [tool.poetry] работал packages:
-RUN poetry install --no-dev
+RUN poetry install --only main
 
 
 # Сборщик для тестов:
@@ -68,6 +68,7 @@ COPY --chown=app:app ./alembic.ini ./
 COPY --chown=app:app ./alembic ./alembic
 COPY --chown=app:app ./scripts/runtime ./scripts/runtime
 COPY --chown=app:app ./src ./src
+COPY --chown=app:app ./pyproject.toml ./
 RUN chmod +x ./scripts/runtime/*
 USER app
 ENTRYPOINT ["./scripts/runtime/entrypoint.sh"]
@@ -84,6 +85,7 @@ COPY --chown=app:app ./alembic ./alembic
 COPY --chown=app:app ./scripts/runtime ./scripts/runtime
 COPY --chown=app:app ./tests ./tests
 COPY --chown=app:app ./src ./src
+COPY --chown=app:app ./pyproject.toml ./
 RUN chmod +x ./scripts/runtime/*
 USER app
 CMD ["pytest"]

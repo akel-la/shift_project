@@ -10,7 +10,7 @@ class UserCreate(BaseSchema):
     """
 
     username: str = Field(..., min_length=3, max_length=50)
-    password: str = Field(..., min_length=6)
+    password: str = Field(..., min_length=6, max_length=50)
     role: UserRole = UserRole.EMPLOYEE
 
 
@@ -22,7 +22,7 @@ class UserUpdate(BaseSchema):
     """
 
     username: str | None = Field(None, min_length=3, max_length=50)
-    password: str | None = Field(None, min_length=6)
+    password: str | None = Field(None, min_length=6, max_length=50)
     role: UserRole | None = None
 
 
@@ -31,7 +31,7 @@ class UserPrivate(BaseSchema):
     Приватная информация о пользователе (для владельца профиля).
     """
 
-    id: int
+    id: int = Field(gt=0)
     username: str
     role: UserRole
 

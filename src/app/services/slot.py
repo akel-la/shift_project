@@ -17,11 +17,13 @@ class SlotService:
         self.repo = SlotRepository(session)
         self.room_repo = RoomRepository(session)
 
+
     async def _get_or_exc(self, slot_id: int) -> Slot:
         slot = await self.repo.get_by_id(slot_id)
         if not slot:
             raise NotFoundError(f"Слот с id = {slot_id} не найден.")
         return slot
+
 
     async def _handle_integrity_error(
         self, error: IntegrityError, room_id: int
@@ -32,6 +34,7 @@ class SlotService:
             f"Нарушение целостности данных при работе со слотом"
             f" в комнате id = {room_id}."
         ) from error
+
 
     async def create(
         self, room_id: int, start_time: datetime.time, end_time: datetime.time
@@ -50,11 +53,14 @@ class SlotService:
         except IntegrityError as e:
             await self._handle_integrity_error(e, room_id)
 
+
     async def get_by_id(self, slot_id: int) -> Slot:
         return await self._get_or_exc(slot_id)
 
+
     async def get_all(self, *, load_room: bool = False) -> Sequence[Slot]:
         return await self.repo.get_all(load_room=load_room)
+
 
     async def get_all_by_room_id(
         self,
@@ -70,6 +76,7 @@ class SlotService:
             load_room=load_room,
         )
 
+
     async def update(self, slot_id: int, **fields) -> Slot:
         slot = await self._get_or_exc(slot_id)
         try:
@@ -78,6 +85,7 @@ class SlotService:
             return updated_slot
         except IntegrityError as e:
             await self._handle_integrity_error(e, slot.room_id)
+
 
     async def delete(self, slot_id: int) -> None:
         slot = await self._get_or_exc(slot_id)

@@ -1,6 +1,7 @@
 import enum
 from typing import TYPE_CHECKING
 
+from sqlalchemy import String
 from sqlalchemy import text
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
@@ -24,6 +25,9 @@ class User(Base):
     password_hash: Mapped[str] = mapped_column(nullable=False)
     username: Mapped[str] = mapped_column(unique=True, nullable=False)
     role: Mapped[UserRole] = mapped_column(
+        # Явно укажем тип, иначе ORM может
+        # попытаться создать enum на уровне БД:
+        String(20),
         default=UserRole.EMPLOYEE,
         # server_default=UserRole.EMPLOYEE.value
         # может не сработать для некоторых диалектов:

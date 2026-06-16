@@ -36,20 +36,18 @@ async def get(
     session: Annotated[AsyncSession, Depends(get_async_session)],
     room_id: int,
     current_user: Annotated[User, Depends(get_current_user)],
-    load_slots: bool = False,
-):
+    ):
     service = RoomService(session)
-    return await service.get_by_id(room_id, load_slots=load_slots)
+    return await service.get_by_id(room_id, load_slots=True)
 
 
 @router.get("", response_model=list[RoomResponse])
 async def get_all(
     session: Annotated[AsyncSession, Depends(get_async_session)],
     current_user: Annotated[User, Depends(get_current_user)],
-    load_slots: bool = False,
-):
+    ):
     service = RoomService(session)
-    return await service.get_all(load_slots=load_slots)
+    return await service.get_all(load_slots=True)
 
 
 @router.put("/{room_id}", response_model=RoomCreateResponse)
@@ -58,7 +56,7 @@ async def update(
     room_id: int,
     data: RoomUpdate,
     _admin: Annotated[User, Depends(get_current_admin_user)],
-):
+    ):
     service = RoomService(session)
     return await service.update(room_id, **data.model_dump(exclude_unset=True))
 
@@ -68,6 +66,6 @@ async def delete(
     session: Annotated[AsyncSession, Depends(get_async_session)],
     room_id: int,
     _admin: Annotated[User, Depends(get_current_admin_user)],
-):
+    ):
     service = RoomService(session)
     await service.delete(room_id)

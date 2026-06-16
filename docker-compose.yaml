@@ -22,13 +22,18 @@ services:
       retries: 5
   app:
     container_name: shift_app
-    build: .
+    build:
+      context: .
+      # Гарантия, что в режиме реальной работы
+      # запустится именно prod, а не test:
+      target: prod
     restart: unless-stopped
     env_file:
       - .env
     environment:
       - ENVIRONMENT=prod
       - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
     ports:
       - "8000:8000"
     depends_on:
@@ -38,7 +43,7 @@ services:
       - shift_prod_network
 
 volumes:
-  postgres_data:
+  shift_postgres_data:
 
 networks:
   shift_prod_network:

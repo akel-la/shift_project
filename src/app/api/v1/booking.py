@@ -60,7 +60,7 @@ async def get_all(
     """
     service = BookingService(session)
 
-    # Сотрудник всегда видит только свои бронирования
+    # Сотрудник всегда видит только свои бронирования:
     if current_user.role != UserRole.ADMIN:
         user_id = current_user.id
 

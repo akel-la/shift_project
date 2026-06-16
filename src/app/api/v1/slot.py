@@ -32,8 +32,7 @@ async def get(
     slot_id: int,
     session: Annotated[AsyncSession, Depends(get_async_session)],
     current_user: Annotated[User, Depends(get_current_user)],
-    load_room: bool = False,
-):
+    ):
     service = SlotService(session)
     return await service.get_by_id(slot_id)
 
@@ -42,10 +41,9 @@ async def get(
 async def get_all(
     session: Annotated[AsyncSession, Depends(get_async_session)],
     current_user: Annotated[User, Depends(get_current_user)],
-    load_room: bool = False,
-):
+    ):
     service = SlotService(session)
-    return await service.get_all(load_room=load_room)
+    return await service.get_all()
 
 
 @router.put("/{slot_id}", response_model=SlotResponse)
@@ -54,7 +52,7 @@ async def update(
     data: SlotUpdate,
     session: Annotated[AsyncSession, Depends(get_async_session)],
     _admin: Annotated[User, Depends(get_current_admin_user)],
-):
+    ):
     service = SlotService(session)
     return await service.update(
         slot_id=slot_id,
@@ -67,7 +65,7 @@ async def delete(
     slot_id: int,
     session: Annotated[AsyncSession, Depends(get_async_session)],
     _admin: Annotated[User, Depends(get_current_admin_user)],
-):
+    ):
     service = SlotService(session)
     await service.delete(slot_id)
 
@@ -83,7 +81,7 @@ async def create_for_room(
     data: SlotCreate,
     session: Annotated[AsyncSession, Depends(get_async_session)],
     _admin: Annotated[User, Depends(get_current_admin_user)],
-):
+    ):
     service = SlotService(session)
     return await service.create(
         room_id=room_id,
@@ -97,10 +95,8 @@ async def get_all_for_room(
     room_id: int,
     session: Annotated[AsyncSession, Depends(get_async_session)],
     current_user: Annotated[User, Depends(get_current_user)],
-    load_room: bool = False,
-):
+    ):
     service = SlotService(session)
     return await service.get_all_by_room_id(
         room_id=room_id,
-        load_room=load_room,
     )

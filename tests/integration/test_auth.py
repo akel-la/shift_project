@@ -7,6 +7,8 @@ from app.core.security import create_token
 
 
 class TestRegistration:
+
+
     async def test_register_employee_success(self, client: AsyncClient):
         """
         Успешная регистрация нового пользователя.
@@ -25,6 +27,7 @@ class TestRegistration:
         assert "refresh_token" in data
         assert data["token_type"] == "bearer"
 
+
     async def test_register_employee_with_short_password_fail(
         self, client: AsyncClient
     ):
@@ -38,6 +41,7 @@ class TestRegistration:
         )
         assert response.status_code == 422
 
+
     async def test_register_with_admin_role_forbidden(self, client: AsyncClient):
         response = await client.post(
             "/api/v1/auth/register",
@@ -48,6 +52,7 @@ class TestRegistration:
             },
         )
         assert response.status_code == 403
+
 
     async def test_register_duplicate_username_conflict(
         self, client: AsyncClient, employee_user
@@ -65,6 +70,8 @@ class TestRegistration:
 
 
 class TestLogin:
+
+
     async def test_login_employee_success(self, client: AsyncClient, employee_user):
         response = await client.post(
             "/api/v1/auth/login",
@@ -78,6 +85,7 @@ class TestLogin:
         assert "access_token" in data
         assert "refresh_token" in data
 
+
     async def test_login_wrong_password(self, client: AsyncClient, employee_user):
         response = await client.post(
             "/api/v1/auth/login",
@@ -87,6 +95,7 @@ class TestLogin:
             },
         )
         assert response.status_code == 401
+
 
     async def test_login_nonexistent_user(self, client: AsyncClient):
         response = await client.post(
@@ -100,6 +109,8 @@ class TestLogin:
 
 
 class TestRefreshToken:
+
+
     async def test_refresh_token_success(self, client: AsyncClient, employee_user):
         """
         Проверка того, что в генератор токенов создает разные значения токенов
@@ -134,6 +145,7 @@ class TestRefreshToken:
         assert new_tokens["access_token"] != tokens["access_token"]
         assert new_tokens["refresh_token"] != tokens["refresh_token"]
 
+
     async def test_refresh_with_access_token_fails(
         self, client: AsyncClient, employee_user
     ):
@@ -159,6 +171,7 @@ class TestRefreshToken:
         )
         assert response.status_code == 401
 
+
     async def test_refresh_with_invalid_token(self, client: AsyncClient):
         """
         Запрос на получение нового access token с неправильным
@@ -171,6 +184,8 @@ class TestRefreshToken:
 
 
 class TestCurrentUser:
+
+
     async def test_get_me_employee(self, client: AsyncClient, employee_token):
         response = await client.get(
             "/api/v1/auth/me", headers={"Authorization": f"Bearer {employee_token}"}
@@ -180,12 +195,14 @@ class TestCurrentUser:
         assert user["username"] == "employee"
         assert user["role"] == "employee"
 
+
     async def test_get_me_without_token(self, client: AsyncClient):
         """
         Делаем запрос без токена - ожидаем ошибку.
         """
         response = await client.get("/api/v1/auth/me")
         assert response.status_code == 401
+
 
     async def test_get_me_with_invalid_token(self, client: AsyncClient):
         """
@@ -195,6 +212,7 @@ class TestCurrentUser:
             "/api/v1/auth/me", headers={"Authorization": "Bearer invalid token"}
         )
         assert response.status_code == 401
+
 
     async def test_get_me_with_expired_token(self, client: AsyncClient, employee_user):
         """
@@ -212,6 +230,8 @@ class TestCurrentUser:
 
 
 class TestUserEndpoints:
+
+
     async def test_get_own_profile(
         self, client: AsyncClient, employee_token, employee_user
     ):
@@ -221,6 +241,7 @@ class TestUserEndpoints:
         )
         assert response.status_code == 200
         assert response.json()["id"] == employee_user.id
+
 
     async def test_get_other_profile_forbidden(
         self, client: AsyncClient, employee_token, admin_user
@@ -233,6 +254,7 @@ class TestUserEndpoints:
             headers={"Authorization": f"Bearer {employee_token}"},
         )
         assert response.status_code == 403
+
 
     async def test_admin_get_any_profile(
         self, client: AsyncClient, admin_token, employee_user
@@ -247,6 +269,7 @@ class TestUserEndpoints:
         assert response.status_code == 200
         assert response.json()["id"] == employee_user.id
 
+
     async def test_update_own_username(
         self, client: AsyncClient, employee_token, employee_user
     ):
@@ -257,6 +280,7 @@ class TestUserEndpoints:
         )
         assert response.status_code == 200
         assert response.json()["username"] == "new_emp_name"
+
 
     async def test_update_own_role_forbidden(
         self, client: AsyncClient, employee_token, employee_user
@@ -271,6 +295,7 @@ class TestUserEndpoints:
         )
         assert response.status_code == 403
 
+
     async def test_admin_update_user_role(
         self, client: AsyncClient, admin_token, employee_user
     ):
@@ -284,6 +309,7 @@ class TestUserEndpoints:
         )
         assert response.status_code == 200
         assert response.json()["role"] == "admin"
+
 
     async def test_update_password_and_login(
         self, client: AsyncClient, employee_token, employee_user
@@ -316,6 +342,7 @@ class TestUserEndpoints:
         )
         assert login_resp2.status_code == 200
 
+
     async def test_delete_user_by_employee_forbidden(
         self, client: AsyncClient, employee_token, admin_user
     ):
@@ -324,6 +351,7 @@ class TestUserEndpoints:
             headers={"Authorization": f"Bearer {employee_token}"},
         )
         assert response.status_code == 403
+
 
     async def test_delete_user_by_admin_success(
         self, client: AsyncClient, admin_token, employee_user
